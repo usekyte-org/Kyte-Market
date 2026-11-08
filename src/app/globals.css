@@ -1,0 +1,523 @@
+@import "tailwindcss";
+
+/*
+  Design tokens (landing-page-design skill, Part B). Flat dark surfaces from the approved list, one accent,
+  Geist for everything with Geist Mono only for numbers and labels.
+*/
+@theme inline {
+  --color-bg: #000000;
+  --color-bg-2: #181818;
+  --color-card: #181818;
+  --color-card-2: #1f1f1f;
+  --color-line: #272727;
+  --color-line-strong: #313131;
+  --color-ink: #ffffff;
+  --color-muted: #9b9b9b;
+  --color-faint: #6b6b6b;
+  --color-accent: #4dfca9;
+  --color-accent-2: #05edfa;
+  --color-accent-ink: #000000;
+  --color-accent-soft: #4dfca91a;
+  --color-call: #4dfca9;
+  --color-put: #05edfa;
+  --color-warn: #ffd166;
+  --color-danger: #ff6b6b;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --ease-base: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--color-bg);
+}
+
+/* Lenis smooth scrolling: the scroller owns the easing, so native smooth scroll and overscroll bounce stay out of it. */
+html.lenis, html.lenis body { height: auto; }
+.lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+html { overscroll-behavior-y: none; }
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+
+/* The one allowed gradient: hero heading text, white to gray, left to right. */
+.hero-heading {
+  background: linear-gradient(90deg, #ffffff 30%, #b8b8b8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -48px;
+  z-index: 100;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-size: 14px;
+  font-weight: 600;
+  transition: top 300ms var(--ease-base);
+}
+.skip-link:focus {
+  top: 16px;
+}
+
+.ascii-rule {
+  font-family: var(--font-mono);
+  color: var(--color-line-strong);
+  overflow: hidden;
+  white-space: nowrap;
+  user-select: none;
+}
+.ascii-rule::before {
+  content: "────────────────────────────────────────────────────────────────────────────────────────────────────────────────";
+}
+
+@layer components {
+  .label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .card {
+    background: var(--color-card);
+    border: 1px solid var(--color-line);
+    border-radius: 16px;
+    transition: border-color 300ms var(--ease-base), background-color 300ms var(--ease-base);
+  }
+  .card-hover:hover {
+    border-color: var(--color-line-strong);
+    background: var(--color-card-2);
+  }
+  .card-accent {
+    border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-line));
+  }
+  .glass {
+    border: 1px solid var(--color-line);
+    background: color-mix(in srgb, var(--color-card) 86%, transparent);
+    backdrop-filter: blur(12px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  .glow {
+    position: relative;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 9999px;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color 300ms var(--ease-base), border-color 300ms var(--ease-base), color 300ms var(--ease-base), transform 300ms var(--ease-base);
+  }
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .btn:not(:disabled):active {
+    transform: scale(0.98);
+  }
+  .btn-primary {
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+  .btn-primary:not(:disabled):hover {
+    background: #e6e6e6;
+    transform: translateY(-1px);
+  }
+  .btn-accent {
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+  .btn-accent:not(:disabled):hover {
+    background: #6dffbb;
+    transform: translateY(-1px);
+  }
+  .btn-ghost {
+    border: 1px solid var(--color-line-strong);
+    color: var(--color-ink);
+    background: var(--color-card);
+  }
+  .btn-ghost:not(:disabled):hover {
+    border-color: var(--color-muted);
+    background: var(--color-card-2);
+  }
+  .btn-sm {
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .input {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-line-strong);
+    border-radius: 8px;
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 300ms var(--ease-base);
+  }
+  .input:focus {
+    border-color: var(--color-accent);
+  }
+  .input option {
+    background: var(--color-card);
+  }
+
+  .link {
+    color: var(--color-ink);
+    transition: color 300ms var(--ease-base);
+  }
+  .link:hover {
+    color: var(--color-accent);
+  }
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+
+/* ---- motion (B7): weighted, decelerating, transform and opacity only ---- */
+@keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+@keyframes slide-in { from { opacity: 0; transform: translateY(-8px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes dash { to { stroke-dashoffset: -8; } }
+@keyframes shimmer { from { background-position: -200% 0 } to { background-position: 200% 0 } }
+@keyframes blink { 50% { opacity: 0 } }
+
+.marquee { animation: marquee 45s linear infinite; }
+.slide-in { animation: slide-in 500ms var(--ease-base); }
+.flow-dash { animation: dash 1.2s linear infinite; }
+
+.reveal { opacity: 0; transform: translateY(32px); transition: opacity 700ms var(--ease-base), transform 700ms var(--ease-base); }
+.reveal.is-visible { opacity: 1; transform: none; }
+
+/* Tagline reveal (B11): words go from muted to full ink one at a time. */
+.word { color: rgba(255, 255, 255, 0.3); transition: color 600ms var(--ease-base); }
+.word.is-on { color: var(--color-ink); }
+
+.shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+.shimmer-text {
+  background: linear-gradient(90deg, var(--color-muted) 25%, var(--color-ink) 50%, var(--color-muted) 75%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 1.4s linear infinite;
+}
+.caret { display: inline-block; width: 7px; height: 14px; margin-left: 2px; vertical-align: -2px; background: var(--color-accent); animation: blink 1s steps(1) infinite; }
+
+/* Product frame: the "screenshot" under the hero. Flat surface, full border. */
+.frame {
+  border-radius: 16px;
+  border: 1px solid var(--color-line);
+  background: var(--color-card);
+  overflow: hidden;
+}
+.frame-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-card-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee, .slide-in, .flow-dash, .shimmer, .shimmer-text, .caret { animation: none; }
+  .reveal { transform: none; transition: opacity 300ms var(--ease-base); }
+  .word { transition: color 300ms var(--ease-base); }
+}
+
+/* ---- pill CTA (label rolls, arrow slides out of the circle) ---- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  padding: 4px 4px 4px 20px;
+  border-radius: 9999px;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: transform 300ms var(--ease-base), background-color 300ms var(--ease-base), box-shadow 300ms var(--ease-base);
+}
+.pill:active { transform: scale(0.98); }
+.pill-accent { background: var(--color-accent); color: var(--color-accent-ink); }
+.pill-light { background: var(--color-ink); color: var(--color-bg); }
+.pill-dark { background: var(--color-card-2); color: var(--color-ink); border: 1px solid var(--color-line-strong); }
+.pill:hover { transform: translateY(-1px); }
+.pill-label { position: relative; display: inline-block; overflow: hidden; line-height: 24px; }
+.pill-text { display: block; transition: transform 500ms var(--ease-base); will-change: transform; }
+.pill-text-2 { position: absolute; left: 0; top: 0; transform: translateY(110%) skewY(4deg); }
+.pill:hover .pill-text { transform: translateY(-110%) skewY(-4deg); }
+.pill:hover .pill-text-2 { transform: translateY(0) skewY(0); }
+.pill-circle { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 9999px; overflow: hidden; flex: none; transition: transform 400ms var(--ease-base); }
+.pill-accent .pill-circle, .pill-light .pill-circle { background: #0b0b0c; color: var(--color-accent); }
+.pill-dark .pill-circle { background: var(--color-ink); color: var(--color-bg); }
+.pill:hover .pill-circle { transform: rotate(-8deg) scale(1.04); }
+/* nav size: 36px tall, 30px circle, same roll and arrow swap */
+.pill-sm { height: 36px; gap: 8px; padding: 3px 3px 3px 14px; font-size: 14px; line-height: 20px; }
+.pill-sm .pill-label { line-height: 20px; }
+.pill-sm .pill-circle { width: 30px; height: 30px; }
+.pill:disabled { opacity: 0.6; cursor: default; }
+/* premium: brand gradient with a glossy top light, a soft green glow and a dark circle ringed in the gradient */
+.pill-premium {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: #03130c;
+  background: linear-gradient(100deg, #7cff8e 0%, #5cffc4 48%, #4af0ff 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) inset, 0 -1px 0 rgba(0, 40, 30, 0.18) inset, 0 10px 30px -10px rgba(92, 255, 196, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+.pill-premium::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 55%);
+  pointer-events: none;
+}
+.pill-premium::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 900ms var(--ease-base);
+  pointer-events: none;
+}
+.pill-premium.pill-sm:hover { transform: none; }
+.pill-premium:hover { transform: translateY(-2px); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset, 0 -1px 0 rgba(0, 40, 30, 0.18) inset, 0 18px 40px -12px rgba(92, 255, 196, 0.6), 0 3px 8px rgba(0, 0, 0, 0.4); }
+.pill-premium:hover::after { transform: translateX(120%); }
+.pill-premium .pill-circle { background: #ffffff; color: #04110c; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.6); transition: transform 500ms var(--ease-base), background-color 450ms var(--ease-base), color 450ms var(--ease-base), box-shadow 450ms var(--ease-base); }
+.pill-premium:hover .pill-circle { background: #04110c; color: #7cff9a; }
+.pill-premium .pill-label, .pill-premium .pill-circle { position: relative; z-index: 1; }
+.pill-premium .pill-label { font-weight: 600; letter-spacing: -0.01em; }
+/* disc glyphs: a live mini price chart (the line flows through, the area breathes, the last price pings), or a dot */
+.pill-spark { display: block; overflow: visible; --spark-speed: 3.2s; }
+.pill:hover .pill-spark { --spark-speed: 1.4s; }
+.pill-spark-line { stroke-dasharray: 30; animation: spark-flow var(--spark-speed) cubic-bezier(0.45, 0, 0.3, 1) infinite; }
+.pill-spark-area { animation: spark-breathe var(--spark-speed) ease-in-out infinite; }
+.pill-spark-dot { animation: spark-pulse var(--spark-speed) ease-in-out infinite; transform-origin: 19px 2.2px; transform-box: view-box; }
+.pill-spark-ping { animation: spark-ping var(--spark-speed) cubic-bezier(0.2, 0.8, 0.2, 1) infinite; transform-origin: 19px 2.2px; transform-box: view-box; }
+@keyframes spark-flow { 0% { stroke-dashoffset: 30; } 45% { stroke-dashoffset: 0; } 75% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -30; } }
+@keyframes spark-breathe { 0%, 15% { opacity: 0; } 50%, 70% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes spark-pulse { 0%, 35% { opacity: 0.35; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.25); } 75% { opacity: 1; transform: scale(1); } 100% { opacity: 0.35; transform: scale(0.8); } }
+@keyframes spark-ping { 0%, 45% { opacity: 0; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1); } 90%, 100% { opacity: 0; transform: scale(3.2); } }
+.pill-sm .pill-spark { width: 15px; height: 11px; }
+.pill:hover .pill-circle { transform: rotate(0deg) scale(1.08); }
+.pill-premium:hover .pill-circle { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5), 0 0 16px rgba(92, 255, 196, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.25) inset; }
+/* plain pill: no disc, label centred with even padding */
+.pill-plain { padding: 4px 22px; }
+.pill-plain.pill-sm { padding: 3px 16px; }
+/* light pill (nav Connect wallet): pure white, label only */
+.pill-light { box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 8px 22px -10px rgba(255, 255, 255, 0.35), 0 1px 4px rgba(0, 0, 0, 0.35); }
+.pill-light .pill-circle { transition: transform 500ms var(--ease-base), background-color 450ms var(--ease-base), color 450ms var(--ease-base); }
+.pill-light:hover .pill-circle { background: var(--color-accent); color: #04110c; }
+.pill-light.pill-sm:hover { transform: none; }
+
+/* ---- circular icon button (socials) ---- */
+.circle-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 9999px; overflow: hidden; background: var(--color-card-2); color: var(--color-ink); border: 1px solid var(--color-line); transition: background-color 300ms var(--ease-base), border-color 300ms var(--ease-base), transform 300ms var(--ease-base); }
+.circle-btn:hover { background: var(--color-line-strong); border-color: var(--color-line-strong); transform: translateY(-1px); }
+.circle-btn:active { transform: scale(0.96); }
+.circle-icon { display: inline-flex; transition: transform 500ms var(--ease-base); }
+.circle-icon-2 { position: absolute; transform: translateY(140%); }
+.circle-btn:hover .circle-icon { transform: translateY(-140%); }
+.circle-btn:hover .circle-icon-2 { transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) { .pill-text, .pill-text-2, .circle-icon { transition: none; } .pill-spark-line, .pill-spark-area, .pill-spark-dot, .pill-spark-ping { animation: none; } }
+
+/* footer links: same roll as the social circles (text rolls up, its duplicate rolls in from below) */
+.link-roll { position: relative; display: inline-block; overflow: hidden; vertical-align: top; transition: color 300ms var(--ease-base); }
+.link-roll-text { display: block; transition: transform 500ms var(--ease-base); will-change: transform; }
+.link-roll-text-2 { position: absolute; left: 0; top: 0; transform: translateY(110%); }
+.link-roll:hover { color: var(--color-ink); }
+.link-roll:hover .link-roll-text { transform: translateY(-110%); }
+.link-roll:hover .link-roll-text-2 { transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { .link-roll-text { transition: none; } }
+
+/* ------------------------------------------------------------------------------------------------
+   Kyte brand site styles (ported from the Updraft/Kyte site): grainy green to cyan gradient, Space
+   Grotesk display, mono eyebrows, hairline borders. Used by the landing page and the footer.
+------------------------------------------------------------------------------------------------ */
+::selection { background: #6eff85; color: #03100a; }
+.font-display { font-family: var(--font-display), ui-sans-serif, sans-serif; letter-spacing: -0.025em; }
+.mono { font-family: var(--font-mono); }
+.eyebrow { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.16em; font-size: 11px; color: var(--color-muted); }
+.grad-text { background: linear-gradient(95deg, #6eff85 0%, #4affec 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.logo-word { font-weight: 500; letter-spacing: -0.02em; background: linear-gradient(95deg, #6eff85 0%, #4affec 100%); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: 0.03em; }
+.grad-bg { background: linear-gradient(95deg, #6eff85 0%, #4affec 100%); }
+.hair { border-color: rgba(160, 255, 220, 0.09); }
+.panel { background: linear-gradient(180deg, rgba(110, 255, 170, 0.035), rgba(74, 255, 236, 0.012)); border: 1px solid rgba(160, 255, 220, 0.09); }
+.grain::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.32; mix-blend-mode: overlay; background-size: 180px 180px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.btn { display: inline-flex; align-items: center; gap: 0.6rem; border-radius: 999px; font-weight: 600; font-size: 14px; transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s, background-color 0.25s, color 0.25s; }
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0) scale(0.96); transition-duration: 0.1s; }
+.btn-x { background: linear-gradient(95deg, #6eff85, #4affec); color: #03130c; padding: 0.85rem 1.4rem; }
+.btn-ghost { border: 1px solid rgba(160, 255, 220, 0.16); color: var(--color-ink); padding: 0.85rem 1.3rem; background: rgba(255, 255, 255, 0.015); }
+.btn-ghost:hover { background: rgba(110, 255, 170, 0.06); }
+/* glass: 48px frosted pill with a hairline gradient ring, the Follow button beside the premium pill in the footer */
+.btn-glass {
+  position: relative;
+  height: 48px;
+  padding: 0 22px 0 20px;
+  color: var(--color-ink);
+  font-weight: 500;
+  font-size: 15px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+.btn-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(120deg, rgba(160, 255, 220, 0.4), rgba(255, 255, 255, 0.1) 45%, rgba(74, 240, 255, 0.35));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  transition: opacity 300ms var(--ease-base);
+  opacity: 0.7;
+}
+.btn-glass:hover { background: linear-gradient(180deg, rgba(110, 255, 170, 0.1), rgba(74, 240, 255, 0.04)); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 10px 30px -12px rgba(92, 255, 196, 0.35), 0 2px 10px rgba(0, 0, 0, 0.35); }
+.btn-glass:hover::before { opacity: 1; }
+.btn-glass svg:last-child { transition: transform 350ms var(--ease-base); }
+.btn-glass:hover svg:last-child { transform: translate(2px, -2px); }
+/* nav sizes of the same two finishes: 36px tall, for the Connect button (premium) and secondary pills (glass) */
+.btn-premium {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  height: 36px;
+  padding: 0 16px;
+  color: #03130c;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  background: linear-gradient(100deg, #7cff8e 0%, #5cffc4 48%, #4af0ff 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) inset, 0 -1px 0 rgba(0, 40, 30, 0.18) inset, 0 8px 22px -10px rgba(92, 255, 196, 0.5), 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+.btn-premium::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 55%); pointer-events: none; }
+.btn-premium::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%); transform: translateX(-120%); transition: transform 900ms var(--ease-base); pointer-events: none; }
+.btn-premium:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset, 0 -1px 0 rgba(0, 40, 30, 0.18) inset, 0 14px 30px -10px rgba(92, 255, 196, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4); }
+.btn-premium:not(:disabled):hover::after { transform: translateX(120%); }
+.btn-premium > * { position: relative; z-index: 1; }
+.btn-glass-sm { height: 36px; padding: 0 14px; font-size: 13px; }
+/* nav pills stay put on hover (a lift under the cursor makes the hit area jitter); the glow does the work */
+.btn.btn-premium:not(:disabled):hover, .btn.btn-glass:not(:disabled):hover { transform: none; }
+.btn.btn-premium:not(:disabled):active, .btn.btn-glass:not(:disabled):active { transform: scale(0.98); }
+/* wallet menu */
+.wallet-menu { background: linear-gradient(180deg, rgba(14, 18, 16, 0.96), rgba(6, 8, 7, 0.98)); border: 1px solid rgba(160, 255, 220, 0.12); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 24px 60px -24px rgba(0, 0, 0, 0.9); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.wallet-menu-item { display: flex; width: 100%; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 13px; color: var(--color-ink); transition: background-color 200ms var(--ease-base), color 200ms var(--ease-base); }
+.wallet-menu-item:hover { background: rgba(110, 255, 170, 0.07); }
+.wallet-menu-item.danger { color: #ff8b8b; }
+.wallet-menu-item.danger:hover { background: rgba(255, 107, 107, 0.08); }
+/* footer status pill */
+.status-pill { display: inline-flex; align-items: center; gap: 10px; height: 36px; padding: 0 14px 0 12px; border-radius: 9999px; font-family: var(--font-mono); font-size: 12px; color: rgba(255, 255, 255, 0.72); background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)); border: 1px solid rgba(160, 255, 220, 0.14); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 6px 18px -10px rgba(0, 0, 0, 0.6); }
+.status-pill .sep { width: 1px; height: 14px; background: rgba(160, 255, 220, 0.14); }
+.lnk { position: relative; }
+.lnk::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.lnk:hover::after { transform: scaleX(1); transform-origin: left; }
+/* nav links: the roll fires from the whole pill, like the footer's .lnk */
+.lnk-nav:hover .link-roll-text { transform: translateY(-110%); }
+.lnk-nav:hover .link-roll-text-2 { transform: translateY(0); }
+/* a link-roll nested inside a .lnk rolls when the whole link is hovered, not only its text box */
+.lnk:hover .link-roll-text { transform: translateY(-110%); }
+.lnk:hover .link-roll-text-2 { transform: translateY(0); }
+.hero-title { font-family: var(--font-hero), ui-sans-serif, sans-serif; font-weight: 300; line-height: 0.94; letter-spacing: -0.045em; color: #f2f7f4; text-wrap: balance; }
+.hero-grad { font-weight: 400; background: linear-gradient(100deg, #7cff8e 0%, #5cffc4 45%, #4af0ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: 0.04em; }
+
+/* Landing hero: slow "breathing" of the aura background (~9s inhale/exhale). */
+@keyframes hero-breathe {
+  0%, 100% { transform: scale(1); filter: brightness(.92) saturate(1); }
+  50% { transform: scale(1.06); filter: brightness(1.12) saturate(1.15); }
+}
+@keyframes hero-breathe-glow {
+  0%, 100% { opacity: .25; transform: scale(.96); }
+  50% { opacity: .75; transform: scale(1.08); }
+}
+.hero-breathe { animation: hero-breathe 9s ease-in-out infinite; transform-origin: 60% 50%; will-change: transform, filter; }
+.hero-breathe-glow {
+  pointer-events: none;
+  background: radial-gradient(60% 55% at 60% 50%, rgba(92,255,196,.22) 0%, rgba(74,240,255,.10) 40%, transparent 70%);
+  mix-blend-mode: screen;
+  animation: hero-breathe-glow 9s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-breathe, .hero-breathe-glow { animation: none; }
+}
+
+/* Live WebGL aurora over the hero image: flows on its own and inhales/exhales in opacity + scale. */
+@keyframes hero-aurora-breathe {
+  0%, 100% { opacity: .35; transform: scale(1); }
+  50% { opacity: .95; transform: scale(1.12); }
+}
+.hero-aurora { mix-blend-mode: screen; transform-origin: 60% 50%; animation: hero-aurora-breathe 8s ease-in-out infinite; will-change: transform, opacity; }
+@media (prefers-reduced-motion: reduce) { .hero-aurora { animation: none; opacity: .7; } }
+
+/* Kyte agent: thinking line (gray shimmer, no colour) and the typewriter caret on the answer */
+@keyframes agent-think-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.agent-think-shimmer { background: linear-gradient(90deg, var(--color-faint) 20%, var(--color-ink) 50%, var(--color-faint) 80%); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: agent-think-shimmer 1.6s linear infinite; }
+@keyframes agent-caret { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.agent-typing > div > :last-child::after { content: ""; display: inline-block; width: 7px; height: 14px; margin-left: 2px; vertical-align: -2px; background: var(--color-muted); animation: agent-caret 1s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .agent-think-shimmer { animation: none; color: var(--color-muted); background: none; } .agent-typing > div > :last-child::after { animation: none; } }
+
+/* Agent wallet gate: the DotField canvas draws the dot grid and the pointer glow. */
+.agent-gate { isolation: isolate; }
